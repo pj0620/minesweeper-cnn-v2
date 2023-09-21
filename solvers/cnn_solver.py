@@ -9,9 +9,9 @@ model_file = '/Users/pj/Projects/Minesweeper/minesweeper-cnn/ms/model/ten_by_ten
 # Load the saved model from the file
 model = load_model(model_file)
 
-NUM_GAMES = 10
-# NUM_GAMES = 2
+NUM_GAMES = 1000
 N = 10
+SEEDS_OFFSET = 0
 n_bombs = 10
 DEBUG_PRINT = False
 
@@ -21,7 +21,7 @@ for iter in tqdm(range(NUM_GAMES), desc='Playing Games', ncols=100):
 # for iter in range(NUM_GAMES):
     if iter % 1000 == 0: print(f"iter: {iter}")
 
-    g = Game(N=N, n_bombs=n_bombs, seed=iter)
+    g = Game(N=N, n_bombs=n_bombs, seed=SEEDS_OFFSET + iter)
     game_over, won_loss = g.click(0, 0, print_wl=DEBUG_PRINT)
 
     while not game_over:
@@ -29,7 +29,7 @@ for iter in tqdm(range(NUM_GAMES), desc='Playing Games', ncols=100):
 
         game_input, correct_output = g.get_input_output_representation()
 
-        input_data = game_input.reshape(1, 10, 10, 2)
+        input_data = game_input.reshape(1, 10, 10, 2) / 8.
 
         if DEBUG_PRINT:
             print("input_data")

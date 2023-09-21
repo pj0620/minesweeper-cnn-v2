@@ -2,6 +2,7 @@ import random
 from typing import Callable, Any
 
 import numpy as np
+import xxhash
 from scipy.signal import convolve2d
 
 
@@ -99,10 +100,23 @@ class Game:
         # manually copy over bombs/values from this game
         new_game.bomb = np.copy(self.bomb)
         new_game.values = np.copy(self.values)
+        new_game.known = np.copy(self.known)
         new_game.N = self.N
         new_game.total_unknown = self.total_unknown
 
         return new_game
+
+    def array_hash(self, arr):
+        return xxhash.xxh64(arr.tobytes()).hexdigest()
+
+    def get_hash(self):
+        input_arr, output_arr = g.get_input_output_representation()
+
+        in_hash = self.array_hash(input_arr)
+        out_hash = self.array_hash(output_arr)
+        combined_hash = xxhash.xxh64(in_hash + out_hash).hexdigest()
+
+        return combined_hash
 
     def print_bombs(self):
         self.print_board_values('BOMBS', lambda x, y: f'{self.bomb[x][y]} ')

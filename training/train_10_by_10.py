@@ -1,19 +1,15 @@
 from keras import Input, Model
-from keras.preprocessing.image import ImageDataGenerator
-from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, UpSampling2D
-import itertools
+from keras.layers import Conv2D
 import matplotlib.pyplot as plt
-import os
 import numpy as np
 from PIL import Image
-from keras.src.layers import BatchNormalization, Dropout, Flatten, Dense, Reshape
+from keras.src.layers import Dropout, Flatten, Dense, Reshape, BatchNormalization
 from tqdm import tqdm
 from game import Game
 import os
 
 N = 10
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 EPOCHES = 10
 
 PERCENT_TRAIN = 0.8
@@ -23,8 +19,7 @@ LOAD_FROM_PNGS = False
 
 DATA_DIR = '/Users/pj/Projects/Minesweeper/minesweeper-cnn/ms/data/10_by_10'
 
-
-def get_model():
+def get_model_v1():
     inp = Input(shape=(N, N, 2))
 
     # Convolutional layers
@@ -45,6 +40,42 @@ def get_model():
     # d = Dense(50, activation='relu')(f)
     # nd = BatchNormalization()(d)
     # d3 = Dropout(0.25)(d)  # added dropout layer
+
+    # Output layer with 10x10 output
+    # d4 = Dense(100, activation='sigmoid')(d3)  # use output from dropout layer
+    df = Dense(100, activation='sigmoid')(f)  # use output from dropout layer
+    output = Reshape((N, N, 1))(df)
+
+    # output = d2
+
+    model = Model(inputs=inp, outputs=output)
+
+    model.compile(optimizer='adam', loss='mean_squared_error')
+    # model.compile(optimizer='adam', loss='binary_crossentropy')
+
+    return model
+
+def get_model_v2():
+    inp = Input(shape=(N, N, 2))
+
+    # Convolutional layers
+    c1 = Conv2D(10, (5, 5), activation='relu', padding='same', input_shape=(10, 10, 1))(inp)
+    # b1 = BatchNormalization()(c1)
+    # p1 = MaxPooling2D((2, 2))(b1)
+    # d1 = Dropout(0.25)(b1)  # added dropout layer
+
+    c2 = Conv2D(10, (3, 3), activation='relu', padding='same')(c1)  # use output from dropout layer
+    # b2 = BatchNormalization()(c2)
+    # p2 = MaxPooling2D((2, 2))(b2)
+    # d2 = Dropout(0.25)(p2)  # added dropout layer
+
+    # Flatten the feature maps
+    f = Flatten()(c2)  # use output from dropout layer
+
+    # Fully connected layer
+    # d = Dense(50, activation='relu')(f)
+    # nd = BatchNormalization()(d)
+    # d3 = Dropout(0.25)(nd)  # added dropout layer
 
     # Output layer with 10x10 output
     # d4 = Dense(100, activation='sigmoid')(d3)  # use output from dropout layer
@@ -161,7 +192,12 @@ if LOAD_FROM_PNGS:
 else:
     train_input_images, test_input_images, train_output_images, test_output_images = get_data_from_saved_np()
 
-model = get_model()
+# train_input_images = train_input_images[:10000]
+# test_input_images = test_input_images[:10000]
+# train_output_images = train_output_images[:10000]
+# test_output_images = test_output_images[:10000]
+
+model = get_model_v2()
 model.summary()
 
 # Set the number of steps per epoch and validation steps
