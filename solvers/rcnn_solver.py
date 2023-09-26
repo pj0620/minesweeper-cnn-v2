@@ -7,10 +7,11 @@ from scipy.signal import convolve2d
 
 from utils.hash_utils import array_hash
 
-model_file = '/model/ten_by_ten_rcnn_v10.2.h5'
+MODEL_DIR = '/Users/pj/Projects/Minesweeper/minesweeper-cnn/ms/model'
+MODEL_FILE = 'ten_by_ten_rcnn.h5'
 
 # Load the saved model from the file
-model = load_model(model_file)
+model = load_model(MODEL_DIR + '/' + MODEL_FILE)
 
 NUM_GAMES = 100
 N = 10

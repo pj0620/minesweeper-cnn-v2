@@ -60,7 +60,7 @@ class Game:
         # print you lost in red text if user clicked a bomb
         if self.bomb[x][y] == 1:
             if print_wl:
-                print("\033[31mYou lost :(\033[0m")
+                print("\n\033[31mYou lost :(\033[0m")
             return True, 'loss'
 
         # # propagate click according to rules of minesweeper
@@ -68,7 +68,7 @@ class Game:
 
         if self.total_unknown <= 0:
             if print_wl:
-                print("\033[32mYou Won!!\033[0m")
+                print("\n\033[32mYou Won!!\033[0m")
             return True, 'win'
 
         return False, 'null'
